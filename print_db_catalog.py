@@ -13,14 +13,19 @@ def pad_str(val, pad):
         val = 'NULL'
     return val.ljust(pad)
 
+host = sys.argv[1] 
+port = int(sys.argv[2])
+usr  = sys.argv[3] 
+pwd  = sys.argv[4]
+db   = sys.argv[5]
+
 # Open connection
-con = mdb.connect(host=sys.argv[1], port=int(sys.argv[2]), 
-    user=sys.argv[3], passwd=sys.argv[4], db=sys.argv[5])
+con = mdb.connect(host=host, port=port, user=usr, passwd=pwd, db=db)
 
 with con:
 
     # Get a list of tables from information schema
-    sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'iqter'"
+    sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s'" % db
     cur = con.cursor(mdb.cursors.DictCursor)
     cur.execute(sql)
     tables = cur.fetchall()

@@ -10,8 +10,14 @@ import MySQLdb as mdb
 import time
 import sys
 
-con = mdb.connect(host=sys.argv[1], port=int(sys.argv[2]), 
-    user=sys.argv[3], passwd=sys.argv[4], db=sys.argv[5])
+host = sys.argv[1] 
+port = int(sys.argv[2])
+usr  = sys.argv[3] 
+pwd  = sys.argv[4]
+db   = sys.argv[5]
+
+# Open connection
+con = mdb.connect(host=host, port=port, user=usr, passwd=pwd, db=db)
 
 SHORT_INTERVAL = 3
 LONG_INTERVAL  = 60
