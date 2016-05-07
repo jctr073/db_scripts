@@ -38,16 +38,14 @@ with con:
         # Setup and print column headers
         desc = cur.description
         print "-" * 27, "-" * 22, "-" * 4, "-" * 3, "-" * 17, "-" * 26
-        print "{Field}                       {Type}                   {Null} {Key} {Default}           {Extra}" \
-        .format(Field=desc[0][0], Type=desc[1][0], Null=desc[2][0], 
-            Key=desc[3][0], Default=desc[4][0], Extra=desc[5][0])
+        print "{}                       {}                   {} {} {}           {}" \
+            .format(desc[0][0], desc[1][0], desc[2][0], desc[3][0], desc[4][0], desc[5][0])
         print "-" * 27, "-" * 22, "-" * 4, "-" * 3, "-" * 17, "-" * 26
 
         # Print padding row values
         for row in rows:
             print "{}{}{}{}{}{}".format(row[0].ljust(28), row[1].ljust(23), row[2].ljust(5), 
                 row[3].ljust(4), pad_str(row[4], 18), row[5].ljust(27))
-            # print row
 
 
 
