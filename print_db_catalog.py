@@ -35,7 +35,7 @@ with con:
 
         # Get table column descriptions
         sql = "DESC %s " % tbl['TABLE_NAME']
-        cur = con.cursor()
+        cur = con.cursor(mdb.cursors.DictCursor)
         cur.execute(sql)
         rows = cur.fetchall()
         print "\n" + tbl['TABLE_NAME']
@@ -49,8 +49,10 @@ with con:
 
         # Print padding row values
         for row in rows:
-            print "{}{}{}{}{}{}".format(row[0].ljust(28), row[1].ljust(23), row[2].ljust(5), 
-                row[3].ljust(4), pad_str(row[4], 18), row[5].ljust(27))
+            print "{}{}{}{}{}{}".format(row['Field'].ljust(28), 
+                row['Type'].ljust(23), row['Null'].ljust(5), row['Key'].ljust(4), 
+                pad_str(row['Default'], 18), row['Extra'].ljust(27))
+
 
 
 

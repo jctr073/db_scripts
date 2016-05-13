@@ -16,11 +16,11 @@ usr  = sys.argv[3]
 pwd  = sys.argv[4]
 db   = sys.argv[5]
 
-# Open connection
-con = mdb.connect(host=host, port=port, user=usr, passwd=pwd, db=db)
-
 SHORT_INTERVAL = 3
 LONG_INTERVAL  = 60
+
+# Open connection
+con = mdb.connect(host=host, port=port, user=usr, passwd=pwd, db=db)
 
 with con:
 
@@ -33,19 +33,26 @@ with con:
 
         # check for slave errors
         while (repeat):
-            cur = con.cursor(mdb.cursors.DictCursor)
+
+            cur  = con.cursor(mdb.cursors.DictCursor)
+            cur2 = con.cursor()
             cur.execute('SHOW SLAVE STATUS')
             row = cur.fetchone()
 
-            if row['Last_SQL_Errno']:
+            if row['Slave_IO_Running'] != 'Yes' and row['Slave_SQL_Running'] != 'Yes':
+                
+                if row['Last_SQL_Errno'] is None:
+                    print "...Attempting to start replication"
+                    cur2.execute('CALL mysql.rds_start_replication')
+                    time.sleep(SHORT_INTERVAL)
+                    
+                elif row['Last_SQL_Errno']:
+                    # Log the error and call skip procedure
+                    print 'err desc: ', row['Last_SQL_Error']
+                    cur2.execute('CALL mysql.rds_skip_repl_error')
 
-                # Log the error and call skip procedure
-                print 'err desc: ', row['Last_SQL_Error']
-                cur2 = con.cursor()
-                cur2.execute('CALL mysql.rds_skip_repl_error')
-
-                # Replication errors can come in waves, so check for more errors
-                time.sleep(SHORT_INTERVAL)
+                    # Replication errors can come in waves, so check for more errors
+                    time.sleep(SHORT_INTERVAL)
             else:
                 # log some stats and skip repeat
                 print time.strftime("%c"), ' > Behind: ', row['Seconds_Behind_Master'], ' Pos: ', row['Exec_Master_Log_Pos'], ' Slave_SQL_Running'
